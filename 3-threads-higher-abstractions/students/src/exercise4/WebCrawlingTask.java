@@ -3,7 +3,9 @@ package exercise4;
 import common.html.GazetaHtmlDocument;
 import common.html.HtmlDocument;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.RecursiveTask;
 
@@ -24,10 +26,10 @@ public class WebCrawlingTask extends RecursiveTask<Integer> {
         System.out.printf("Looking for words '%s' in article %s\n", wordToCount, documentUrl);
         HtmlDocument document = new GazetaHtmlDocument(documentUrl);
 
-        // TODO: Create list of forks of type List<RecursiveTask<Integer>>
-        // TODO: Create new WordCountingTask for given document
-        // TODO: Add created WordCountingTask to list of forks
-        // TODO: Invoke method fork() on created WordCountingTask
+        List<RecursiveTask<Integer>> forks = new ArrayList<RecursiveTask<Integer>>();
+        WordCountingTask wordCountingTask = new WordCountingTask(documentUrl,wordToCount);
+        forks.add(wordCountingTask);
+        wordCountingTask.fork();
 
         for (String link : document.getLinks()) {
             // Avoid visiting the same links and limit number of visited links
@@ -43,16 +45,16 @@ public class WebCrawlingTask extends RecursiveTask<Integer> {
             }
 
             if (!visited) {
-                // TODO: If given link was not yet visited, go for it!
-                // TODO: Create new WebCrawlingTask for given link
-                // TODO: Add created WebCrawlingTask to list of forks
-                // TODO: Invoke method fork() on created WebCrawlingTask
+                WebCrawlingTask webCrawlingTask = new WebCrawlingTask(link,wordToCount);
+                forks.add(webCrawlingTask);
+                webCrawlingTask.fork();
             }
         }
 
         int result = 0;
-        // TODO: Iterate over list of forks and for each invoke join() method
-        // TODO: add value returned from join() method to result variable
+        for(RecursiveTask<Integer> fork : forks) {
+            result += fork.join();
+        }
         return result;
     }
 }
