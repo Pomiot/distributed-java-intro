@@ -15,9 +15,11 @@ public class SayMain {
         Connection connection = connectionFactory.createConnection();
         Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
         Destination queue = session.createQueue("SayHelloQueue");
+        Destination topic = session.createTopic("SayHelloTopic");
         MessageProducer producer = session.createProducer(queue);
 
-        producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+        producer.setTimeToLive(3000);
 
         connection.start();
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -26,6 +28,9 @@ public class SayMain {
             System.out.print("Say hello to:");
             in = bufferedReader.readLine();
             TextMessage message = session.createTextMessage(in);
+
+            message.setBooleanProperty("dots", in.contains("."));
+
             producer.send(message);
         }
 
