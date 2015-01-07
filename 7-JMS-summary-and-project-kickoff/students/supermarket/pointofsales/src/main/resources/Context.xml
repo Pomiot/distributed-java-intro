@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                   http://www.springframework.org/schema/beans/spring-beans.xsd
+                                   ">
+
+    <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+    </bean>
+
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="connectionFactory"/>
+    </bean>
+
+
+    <!-- communicating sales info to analysis module -->
+    <bean id="analysisQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="analysis"/>
+    </bean>
+
+    <bean id="analysisServiceProducer" class="pl.edu.amu.dji.jms.lab4.AnalysisServiceProducer">
+        <property name="jmsTemplate" ref="jmsTemplate"/>
+        <property name="analysisQueue" ref="analysisQueue"/>
+    </bean>
+
+    <!-- receiving product list info-->
+    <bean id="productsListTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="productsListTopic"/>
+    </bean>
+
+    <bean id="productsService" class="pl.edu.amu.dji.jms.lab4.ProductsService">
+        <property name="jmsTemplate" ref="jmsTemplate"/>
+    </bean>
+
+    <bean id="messageListenerContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="messageListener" ref="productsService"/>
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="destination" ref="productsListTopic"/>
+    </bean>
+
+</beans>
