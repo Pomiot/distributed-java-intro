@@ -17,9 +17,7 @@
         <constructor-arg value="analysisQueue"/>
     </bean>
 
-    <bean id="AnalysisServiceListener" class="pl.edu.amu.dji.jms.lab4.analysis.AnalysisServiceListener">
-        <property name="jmsTemplate" ref="jmsTemplate"/>
-    </bean>
+    <bean id="analysisService" class="pl.edu.amu.dji.jms.lab4.analysis.service.AnalysisService"/>
 
     <bean id="messageListenerContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="messageListener" ref="analysisService"/>

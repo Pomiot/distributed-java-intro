@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://www.springframework.org/schema/beans"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                                   http://www.springframework.org/schema/beans/spring-beans.xsd
-                                   ">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd
+                           ">
+    <context:component-scan base-package="pl.edu.amu.dji.jms.lab4.*"/>
+    <tx:annotation-driven/>
+
+    <bean id="posProductList" class="pl.edu.amu.dji.jms.lab4.PosProductList"/>
 
     <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
         <property name="brokerURL" value="tcp://localhost:61616"/>
@@ -14,12 +24,12 @@
     </bean>
 
 
-    <!-- communicating sales info to analysis module -->
+    <!-- communicating sales info to analysis module-->
     <bean id="analysisQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="analysis"/>
+        <constructor-arg value="analysisQueue"/>
     </bean>
 
-    <bean id="analysisServiceProducer" class="pl.edu.amu.dji.jms.lab4.AnalysisServiceProducer">
+    <bean id="salesInfoUpdateService" class="pl.edu.amu.dji.jms.lab4.service.SalesInfoUpdateService">
         <property name="jmsTemplate" ref="jmsTemplate"/>
         <property name="analysisQueue" ref="analysisQueue"/>
     </bean>
@@ -29,12 +39,10 @@
         <constructor-arg value="productsListTopic"/>
     </bean>
 
-    <bean id="productsService" class="pl.edu.amu.dji.jms.lab4.ProductsService">
-        <property name="jmsTemplate" ref="jmsTemplate"/>
-    </bean>
+    <bean id="productInfoUpdateService" class="pl.edu.amu.dji.jms.lab4.service.ProductInfoUpdateService"/>
 
     <bean id="messageListenerContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="messageListener" ref="productsService"/>
+        <property name="messageListener" ref="productInfoUpdateService"/>
         <property name="connectionFactory" ref="connectionFactory"/>
         <property name="destination" ref="productsListTopic"/>
     </bean>

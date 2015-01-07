@@ -7,7 +7,7 @@ import javax.jms.JMSException;
 
 public class WarehouseApp {
 
-    private static ProductList productList = new ProductList();
+    private static WarehouseProductList warehouseProductList = new WarehouseProductList();
 
     public static void main(String[] args) throws JMSException, IOException {
 
@@ -32,21 +32,21 @@ public class WarehouseApp {
                     break;
                 }
                 case 1:{
-                    productList.sendList();
+                    warehouseProductList.sendList();
                     break;
                 }
                 case 2:{
-                    productList.displayProductList();
+                    warehouseProductList.displayProductList();
                     break;
                 }
                 case 3:{
 
-                    productList.changeItemPriceInterface();
+                    warehouseProductList.changeItemPriceInterface();
                     break;
                 }
                 case 4:{
 
-                    productList.addItemToListInterface();
+                    warehouseProductList.addItemToListInterface();
                     break;
                 }
                 default:{
